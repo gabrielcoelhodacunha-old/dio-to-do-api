@@ -1,12 +1,15 @@
-import 'module-alias/register';
+import 'reflect-metadata';
 import express from 'express';
-import env from '@config/';
+import env from '../config';
+import database from '../database';
 import createRouters from './routes';
 
-const app = express();
-app.use(express.json());
-app.use(createRouters());
+database.initialize().then(() => {
+	const app = express();
+	app.use(express.json());
+	app.use(createRouters());
 
-app.listen(env.PORT, env.HOST, () => {
-	console.log(`Server running on ${env.PROTOCOL}://${env.HOST}:${env.PORT}`);
+	app.listen(env.PORT, env.HOST, () => {
+		console.log(`Server running on ${env.PROTOCOL}://${env.HOST}:${env.PORT}`);
+	});
 });

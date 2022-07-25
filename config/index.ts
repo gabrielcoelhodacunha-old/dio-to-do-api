@@ -1,13 +1,14 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { TEnv } from '@types';
+import { TEnv } from '../@types';
 
+const NODE_ENV = process.env.NODE_ENV;
 readDotEnvAndSetVariables();
-const env = createEnvForApp('TO_DO');
+const env = { ...createEnvForApp('TO_DO'), NODE_ENV };
 
 function readDotEnvAndSetVariables() {
 	dotenv.config({
-		path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
+		path: path.resolve(__dirname, `${NODE_ENV}.env`),
 	});
 }
 

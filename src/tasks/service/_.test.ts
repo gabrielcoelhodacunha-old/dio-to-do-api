@@ -1,20 +1,52 @@
-import axios from 'axios';
-import { StatusCodes } from 'http-status-codes';
-import env from '@config/';
+import { Repository } from 'typeorm';
+import database, { FILE_PATH } from '../../../database';
+import { deleteFile } from '../../utils/files';
+import Task from '../../tasks/entity';
+import TasksService from '.';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+describe('TasksService', () => {
+	let repository: Repository<Task>;
+	let service: TasksService;
 
-describe('Tasks route', () => {
-	const url = `${env.HOST}:${env.PORT}`;
-	describe('/', () => {
-		it('should return status 200', async () => {
-			mockedAxios.get.mockResolvedValue({
-				data: {
-					message: 'Welcome!',
-				},
-				status: StatusCodes.OK,
-			});
+	beforeAll(async () => {
+		await database.initialize();
+		repository = database.getRepository(Task);
+		service = new TasksService(repository);
+	});
+
+	afterEach(async () => {
+		await database.createQueryBuilder().delete().from(Task).execute();
+	});
+
+	afterAll(async () => {
+		deleteFile(FILE_PATH);
+	});
+
+	describe('create method', () => {
+		it('should create task', async () => {
+			const taskData = { description: 'Test' };
+			const newTask = await service.create(taskData);
+
+			expect(newTask).toHaveProperty('id');
+			expect(newTask).toHaveProperty('description');
+			expect(newTask).toHaveProperty('isDone');
+			expect(newTask).toHaveProperty('createdAt');
+		});
+
+		it('should throw error', () => {
+			const taskData = { description: '' };
+			expect(service.create(taskData)).rejects.toThrowError();
+		});
+	});
+
+	describe('readAll method', () => {
+		it('should read all tasks', async () => {
+			const TASK_COUNT = 5;
+			for (let TASK = 0; TASK < TASK_COUNT; TASK++) {
+				await service.create({ description: `Task ${TASK}` });
+			}
+			const allTasks = await service.readAll();
+			expect(allTasks).toHaveLength(TASK_COUNT);
 		});
 	});
 });

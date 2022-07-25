@@ -5,18 +5,12 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
+		"strictPropertyInitialization": false,
 		"skipLibCheck": true,
 		"moduleResolution": "node",
 		"outDir": "./dist",
-		"baseUrl": "./",
-		"paths": {
-			"@types/*": ["@types", "@types/*"],
-			"@config/*": ["config", "config/*"],
-			"@database/*": ["database", "database/*"],
-			"@src/*": ["src", "src/*"],
-			"@tasks/*": ["src/tasks", "src/tasks/*"]
-		}
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
 	},
-	"exclude": ["node_modules"],
-	"include": ["./@types/*", "./config/*", "./database/**/*", "./src/**/*"]
+	"exclude": ["node_modules"]
 }
