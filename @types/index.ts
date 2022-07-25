@@ -11,4 +11,6 @@ export type TEnv = TObject & {
 
 export type TTask = TObject & {
 	description: string;
+	id?: number;
+	isDone?: boolean;
 };
