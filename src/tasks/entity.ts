@@ -9,16 +9,18 @@ class Task {
 	@Column()
 	description: string;
 
-	@Column()
-	isDone: boolean = false;
+	@Column({ default: false })
+	isDone: boolean;
 
-	@Column()
-	createdAt: Date = new Date();
+	@Column({ default: () => 'DATETIME()' })
+	createdAt: Date;
 
 	constructor(task?: TTask) {
 		if (!task) return;
-		const { description } = task;
+		const { description, isDone } = task;
 		this.description = description;
+		if (!isDone) return;
+		this.isDone = isDone;
 	}
 }
 
