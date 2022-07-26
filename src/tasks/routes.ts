@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import TasksController from './controller';
 
 function createTasksRouter(): Router {
 	const router = Router();
 
-	router.get('/', (_, response) => {
-		return response.status(StatusCodes.OK).json({ message: 'Welcome!' });
-	});
+	router.get('/tasks', TasksController.readAll);
 
 	return router;
 }

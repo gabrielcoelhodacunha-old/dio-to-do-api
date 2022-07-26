@@ -1,23 +1,16 @@
-import { Repository } from 'typeorm';
 import { TTask } from '../../../@types';
 import database from '../../../database';
 import Task from '../entity';
+import { InvalidDataError, NoDataError } from '../errors';
 
-const ERROR_NO_DATA = 'No data was provided.';
-const ERROR_INVALID_DATA = 'Invalid data provided.';
+const _repository = database.getRepository(Task);
 
-class TasksService {
-	readonly _repository: Repository<Task>;
-
-	constructor(repository = database.getRepository(Task)) {
-		this._repository = repository;
-	}
-
+const TasksService = {
 	async createOne(taskData: TTask): Promise<Task> {
 		const { description } = taskData;
-		if (!description) throw new Error(ERROR_NO_DATA);
-		return await this._repository.save(new Task(taskData));
-	}
+		if (!description) throw new NoDataError();
+		return await _repository.save(new Task(taskData));
+	},
 
 	async createMultiple(tasks: TTask[]): Promise<Task[]> {
 		const createdTasks = [];
@@ -25,49 +18,49 @@ class TasksService {
 			createdTasks.push(await this.createOne(task));
 		}
 		return createdTasks;
-	}
+	},
 
 	async readOne(id: number): Promise<Task> {
-		const task = await this._repository.findOneBy({ id });
-		if (!task) throw new Error(ERROR_INVALID_DATA);
+		const task = await _repository.findOneBy({ id });
+		if (!task) throw new InvalidDataError();
 		return task;
-	}
+	},
 
 	async readAll(): Promise<Task[]> {
-		return await this._repository.find();
-	}
+		return await _repository.find();
+	},
 
 	async updateOne({ id, description, isDone }: TTask): Promise<void> {
-		const result = await this._repository
+		const result = await _repository
 			.createQueryBuilder()
 			.update()
 			.set({ description, isDone })
 			.where('id = :id', { id })
 			.execute();
-		if (!result.affected) throw new Error(ERROR_INVALID_DATA);
-	}
+		if (!result.affected) throw new InvalidDataError();
+	},
 
 	async deleteOne(id: number): Promise<void> {
-		const result = await this._repository
+		const result = await _repository
 			.createQueryBuilder()
 			.delete()
 			.where('id = :id', { id })
 			.execute();
-		if (!result.affected) throw new Error(ERROR_INVALID_DATA);
-	}
+		if (!result.affected) throw new InvalidDataError();
+	},
 
 	async deleteMultiple(ids: number[]): Promise<void> {
-		const result = await this._repository
+		const result = await _repository
 			.createQueryBuilder()
 			.delete()
 			.where('id IN (:...ids)', { ids })
 			.execute();
-		if (!result.affected) throw new Error(ERROR_INVALID_DATA);
-	}
+		if (!result.affected) throw new InvalidDataError();
+	},
 
 	async deleteAll(): Promise<void> {
-		await this._repository.clear();
-	}
-}
+		await _repository.clear();
+	},
+};
 
 export default TasksService;
