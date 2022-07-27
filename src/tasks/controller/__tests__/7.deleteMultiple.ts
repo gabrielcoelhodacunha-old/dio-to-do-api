@@ -1,26 +1,52 @@
-import { TasksService, InvalidDataError } from '.';
+import {
+	TasksController,
+	NoDataError,
+	getMockReq,
+	getMockRes,
+	StatusCodes,
+} from '.';
 
 const deleteMultiple = () =>
 	describe('deleteMultiple method', () => {
-		it('should delete multiple Tasks', async () => {
-			let tasksIdsToDelete = [];
-			const TASK_COUNT = 5;
-			for (let TASK = 0; TASK < TASK_COUNT; TASK++) {
-				const { id } = await TasksService.createOne({
-					description: `Task ${TASK}`,
-				});
-				tasksIdsToDelete.push(id);
+		describe('with ids', () => {
+			const ID_COUNT = 5;
+			const tasksIds: Number[] = [];
+			for (let ID = 1; ID < ID_COUNT; ID++) {
+				tasksIds.push(ID);
 			}
-			tasksIdsToDelete.splice(0, 2);
-			await TasksService.deleteMultiple(tasksIdsToDelete);
-			const tasks = await TasksService.readAll();
-			expect(tasks).toHaveLength(TASK_COUNT - tasksIdsToDelete.length);
+			const mockedRequest = getMockReq({ body: { ids: tasksIds } });
+			const { res: mockedResponse } = getMockRes();
+
+			beforeAll(async () => {
+				await TasksController.deleteMultiple(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 204 (NO_CONTENT)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.NO_CONTENT
+				);
+			});
 		});
-		it('should throw InvalidDataError', async () => {
-			const fakeTasksIds = [100, 200, 300];
-			await expect(
-				TasksService.deleteMultiple(fakeTasksIds)
-			).rejects.toThrowError(InvalidDataError);
+
+		describe('without ids', () => {
+			const mockedRequest = getMockReq({ body: {} });
+			const { res: mockedResponse } = getMockRes();
+
+			beforeAll(async () => {
+				await TasksController.deleteMultiple(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 400 (BAD_REQUEST)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.BAD_REQUEST
+				);
+			});
+
+			it('should return NoDataError message', async () => {
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					expect.objectContaining({ error: new NoDataError().message })
+				);
+			});
 		});
 	});
 

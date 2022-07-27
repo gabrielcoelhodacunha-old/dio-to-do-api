@@ -76,6 +76,20 @@ const TasksController = {
 		}
 	},
 
+	async deleteMultiple(
+		request: Request,
+		response: Response
+	): Promise<Response> {
+		try {
+			const { ids } = request.body;
+			if (!ids) throw new NoDataError();
+			await TasksService.deleteMultiple(ids);
+			return response.status(StatusCodes.NO_CONTENT).json();
+		} catch (error) {
+			return handleErrors(response, error);
+		}
+	},
+
 	async deleteAll(_: Request, response: Response): Promise<Response> {
 		await TasksService.deleteAll();
 		return response.status(StatusCodes.NO_CONTENT).json();
