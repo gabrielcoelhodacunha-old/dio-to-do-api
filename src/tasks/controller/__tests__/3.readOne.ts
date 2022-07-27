@@ -1,21 +1,52 @@
-import { TasksService, InvalidDataError } from '.';
+import {
+	getMockReq,
+	getMockRes,
+	TasksController,
+	StatusCodes,
+	NoDataError,
+} from '.';
 
 const readOne = () =>
 	describe('readOne method', () => {
-		it('should read one Task', async () => {
-			const taskToRead = await TasksService.createOne({ description: 'Task' });
-			for (let TASK = 0; TASK < 2; TASK++) {
-				await TasksService.createOne({ description: `Task ${TASK}` });
-			}
-			const taskRead = await TasksService.readOne(taskToRead.id);
-			expect(taskRead.id).toBe(taskToRead.id);
+		describe('with id', () => {
+			const taskId = 1;
+			const mockedRequest = getMockReq({ params: { id: String(taskId) } });
+			const { res: mockedResponse } = getMockRes({
+				locals: { task: { id: taskId } },
+			});
+
+			beforeAll(async () => {
+				await TasksController.readOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 200 (OK)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
+			});
+
+			it('should return a Task containing the id', async () => {
+				expect(mockedResponse.locals.task).toMatchObject({ id: taskId });
+			});
 		});
 
-		it('should throw InvalidDataError', async () => {
-			const fakeTaskId = 150;
-			await expect(TasksService.readOne(fakeTaskId)).rejects.toThrowError(
-				InvalidDataError
-			);
+		describe('without id', () => {
+			const mockedRequest = getMockReq({ params: {} });
+			const { res: mockedResponse } = getMockRes({ locals: {} });
+
+			beforeAll(async () => {
+				await TasksController.readOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 400 (BAD_REQUEST)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.BAD_REQUEST
+				);
+			});
+
+			it('should return NoDataError message', async () => {
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					expect.objectContaining({ error: new NoDataError().message })
+				);
+			});
 		});
 	});
 

@@ -33,6 +33,18 @@ const TasksController = {
 		}
 	},
 
+	async readOne(request: Request, response: Response): Promise<Response> {
+		try {
+			const { id } = request.params;
+			const numericId = Number(id);
+			if (isNaN(numericId)) throw new NoDataError();
+			const task = await TasksService.readOne(numericId);
+			return response.status(StatusCodes.OK).json({ task });
+		} catch (error) {
+			return handleErrors(response, error);
+		}
+	},
+
 	async readAll(_: Request, response: Response): Promise<Response> {
 		const tasks = await TasksService.readAll();
 		return response.status(StatusCodes.OK).json({ tasks });
