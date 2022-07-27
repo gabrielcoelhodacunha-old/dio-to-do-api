@@ -50,6 +50,20 @@ const TasksController = {
 		return response.status(StatusCodes.OK).json({ tasks });
 	},
 
+	async updateOne(request: Request, response: Response): Promise<Response> {
+		try {
+			const { id } = request.params;
+			const { taskData } = request.body;
+			const numericId = Number(id);
+			if (isNaN(numericId) || !taskData) throw new NoDataError();
+			await TasksService.updateOne({ ...taskData, id });
+			const updatedTask = await TasksService.readOne(numericId);
+			return response.status(StatusCodes.OK).json({ task: updatedTask });
+		} catch (error) {
+			return handleErrors(response, error);
+		}
+	},
+
 	async deleteAll(_: Request, response: Response): Promise<Response> {
 		await TasksService.deleteAll();
 		return response.status(StatusCodes.NO_CONTENT).json();

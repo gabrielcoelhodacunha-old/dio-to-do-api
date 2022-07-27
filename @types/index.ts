@@ -10,7 +10,7 @@ export type TEnv = TObject & {
 };
 
 export type TTask = TObject & {
-	description: string;
 	id?: number;
+	description?: string;
 	isDone?: boolean;
 };

@@ -1,4 +1,4 @@
-import { TTask } from '../../@types';
+import { TObject, TTask } from '../../@types';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -17,10 +17,10 @@ class Task {
 
 	constructor(task?: TTask) {
 		if (!task) return;
-		const { description, isDone } = task;
-		this.description = description;
-		if (!isDone) return;
-		this.isDone = isDone;
+		Object.entries(task).forEach(([key, value]) => {
+			if (!value) return;
+			(this as TObject)[key] = value;
+		});
 	}
 }
 
