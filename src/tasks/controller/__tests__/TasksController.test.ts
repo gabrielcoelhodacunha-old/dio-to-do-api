@@ -3,6 +3,7 @@ import createMultiple from './2.createMultiple';
 import readOne from './3.readOne';
 import readAll from './4.readAll';
 import updateOne from './5.updateOne';
+import deleteOne from './6.deleteOne';
 import deleteAll from './8.deleteAll';
 
 jest.mock('../../service');
@@ -13,5 +14,6 @@ describe('TasksController', () => {
 	readOne();
 	readAll();
 	updateOne();
+	deleteOne();
 	deleteAll();
 });

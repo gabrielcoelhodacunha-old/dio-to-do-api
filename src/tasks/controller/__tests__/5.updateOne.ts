@@ -1,7 +1,6 @@
 import {
 	TasksController,
 	NoDataError,
-	Task,
 	getMockReq,
 	getMockRes,
 	StatusCodes,
@@ -9,7 +8,7 @@ import {
 
 const updateOne = () =>
 	describe('updateOne method', () => {
-		describe('with id', () => {
+		describe('with id and properties to update', () => {
 			const taskId = String(1);
 			const taskUpdates = { isDone: true };
 			const updatedTask = { ...taskUpdates, id: taskId };
@@ -29,35 +28,64 @@ const updateOne = () =>
 				expect(mockedResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
 			});
 
-			it('should return a Task containing the id', async () => {
+			it('should return the updated Task', async () => {
 				expect(mockedResponse.locals.task).toMatchObject(updatedTask);
 			});
 		});
-	});
 
-// const updateOne = () =>
-// 	describe('updateOne method', () => {
-// 		it('should update the Task', async () => {
-// 			const taskToUpdate = await TasksService.createOne({
-// 				description: 'Task',
-// 			});
-// 			await TasksService.updateOne({
-// 				...taskToUpdate,
-// 				description: 'Updated',
-// 				isDone: true,
-// 			});
-// 			expect(await TasksService.readOne(taskToUpdate.id)).toMatchObject({
-// 				...taskToUpdate,
-// 				description: 'Updated',
-// 				isDone: true,
-// 			});
-// 		});
-// 		it('should throw InvalidDataError', async () => {
-// 			const fakeTask = { id: 150, description: 'Test', isDone: true };
-// 			await expect(TasksService.updateOne(fakeTask)).rejects.toThrowError(
-// 				InvalidDataError
-// 			);
-// 		});
-// 	});
+		describe('without id', () => {
+			const taskUpdates = { isDone: true };
+			const mockedRequest = getMockReq({
+				params: {},
+				body: { taskData: taskUpdates },
+			});
+			const { res: mockedResponse } = getMockRes({
+				locals: {},
+			});
+
+			beforeAll(async () => {
+				await TasksController.updateOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 400 (BAD_REQUEST)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.BAD_REQUEST
+				);
+			});
+
+			it('should return NoDataError message', async () => {
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					expect.objectContaining({ error: new NoDataError().message })
+				);
+			});
+		});
+
+		describe('without taskData to update', () => {
+			const taskId = String(1);
+			const mockedRequest = getMockReq({
+				params: { id: taskId },
+				body: {},
+			});
+			const { res: mockedResponse } = getMockRes({
+				locals: {},
+			});
+
+			beforeAll(async () => {
+				await TasksController.updateOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 400 (BAD_REQUEST)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.BAD_REQUEST
+				);
+			});
+
+			it('should return NoDataError message', async () => {
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					expect.objectContaining({ error: new NoDataError().message })
+				);
+			});
+		});
+	});
 
 export default updateOne;

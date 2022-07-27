@@ -64,6 +64,18 @@ const TasksController = {
 		}
 	},
 
+	async deleteOne(request: Request, response: Response): Promise<Response> {
+		try {
+			const { id } = request.params;
+			const numericId = Number(id);
+			if (isNaN(numericId)) throw new NoDataError();
+			await TasksService.deleteOne(numericId);
+			return response.status(StatusCodes.NO_CONTENT).json();
+		} catch (error) {
+			return handleErrors(response, error);
+		}
+	},
+
 	async deleteAll(_: Request, response: Response): Promise<Response> {
 		await TasksService.deleteAll();
 		return response.status(StatusCodes.NO_CONTENT).json();

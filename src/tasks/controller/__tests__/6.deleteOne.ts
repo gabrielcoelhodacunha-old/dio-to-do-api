@@ -1,16 +1,48 @@
-import { TasksService, InvalidDataError } from '.';
+import {
+	TasksController,
+	NoDataError,
+	getMockReq,
+	getMockRes,
+	StatusCodes,
+} from '.';
 
 const deleteOne = () =>
 	describe('deleteOne method', () => {
-		it('should delete the Task', async () => {
-			const { id } = await TasksService.createOne({ description: 'Task' });
-			await expect(TasksService.deleteOne(id)).resolves.not.toThrowError();
+		describe('with id', () => {
+			const taskId = String(1);
+			const mockedRequest = getMockReq({ params: { id: taskId } });
+			const { res: mockedResponse } = getMockRes();
+
+			beforeAll(async () => {
+				await TasksController.deleteOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 204 (NO_CONTENT)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.NO_CONTENT
+				);
+			});
 		});
-		it('should throw InvalidDataError', async () => {
-			const fakeTaskId = 150;
-			await expect(TasksService.deleteOne(fakeTaskId)).rejects.toThrowError(
-				InvalidDataError
-			);
+
+		describe('without id', () => {
+			const mockedRequest = getMockReq({ params: {} });
+			const { res: mockedResponse } = getMockRes();
+
+			beforeAll(async () => {
+				await TasksController.deleteOne(mockedRequest, mockedResponse);
+			});
+
+			it('should return status 400 (BAD_REQUEST)', async () => {
+				expect(mockedResponse.status).toHaveBeenCalledWith(
+					StatusCodes.BAD_REQUEST
+				);
+			});
+
+			it('should return NoDataError message', async () => {
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					expect.objectContaining({ error: new NoDataError().message })
+				);
+			});
 		});
 	});
 
