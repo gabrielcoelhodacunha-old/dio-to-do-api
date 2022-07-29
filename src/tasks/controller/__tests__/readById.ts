@@ -6,8 +6,8 @@ import {
 	NoDataError,
 } from '.';
 
-const readOne = () =>
-	describe('readOne method', () => {
+const readById = () =>
+	describe('readById method', () => {
 		describe('with id', () => {
 			const taskId = 1;
 			const mockedRequest = getMockReq({ params: { id: String(taskId) } });
@@ -16,7 +16,7 @@ const readOne = () =>
 			});
 
 			beforeAll(async () => {
-				await TasksController.readOne(mockedRequest, mockedResponse);
+				await TasksController.readById(mockedRequest, mockedResponse);
 			});
 
 			it('should return status 200 (OK)', async () => {
@@ -33,7 +33,7 @@ const readOne = () =>
 			const { res: mockedResponse } = getMockRes({ locals: {} });
 
 			beforeAll(async () => {
-				await TasksController.readOne(mockedRequest, mockedResponse);
+				await TasksController.readById(mockedRequest, mockedResponse);
 			});
 
 			it('should return status 400 (BAD_REQUEST)', async () => {
@@ -50,4 +50,4 @@ const readOne = () =>
 		});
 	});
 
-export default readOne;
+export default readById;

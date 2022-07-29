@@ -1,21 +1,17 @@
 import { configureSetupAndTeardown } from '.';
-import createOne from './1.createOne';
-import createMultiple from './2.createMultiple';
-import readOne from './3.readOne';
-import readAll from './4.readAll';
-import updateOne from './5.updateOne';
-import deleteOne from './6.deleteOne';
-import deleteMultiple from './7.deleteMultiple';
-import deleteAll from './8.deleteAll';
+import create from './create';
+import readById from './readById';
+import readAll from './readAll';
+import updateOne from './updateOne';
+import deleteByIds from './deleteByIds';
+import deleteAll from './deleteAll';
 
 describe('TasksService', () => {
 	configureSetupAndTeardown();
-	createOne();
-	createMultiple();
-	readOne();
+	create();
+	readById();
 	readAll();
 	updateOne();
-	deleteOne();
-	deleteMultiple();
+	deleteByIds();
 	deleteAll();
 });

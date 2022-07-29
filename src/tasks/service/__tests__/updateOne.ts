@@ -3,15 +3,19 @@ import { TasksService, InvalidDataError } from '.';
 const updateOne = () =>
 	describe('updateOne method', () => {
 		it('should update the Task', async () => {
-			const taskToUpdate = await TasksService.createOne({
-				description: 'Task',
-			});
+			const taskToUpdate = (
+				await TasksService.create([
+					{
+						description: 'Task',
+					},
+				])
+			)[0];
 			await TasksService.updateOne({
 				...taskToUpdate,
 				description: 'Updated',
 				isDone: true,
 			});
-			expect(await TasksService.readOne(taskToUpdate.id)).toMatchObject({
+			expect(await TasksService.readById(taskToUpdate.id)).toMatchObject({
 				...taskToUpdate,
 				description: 'Updated',
 				isDone: true,
