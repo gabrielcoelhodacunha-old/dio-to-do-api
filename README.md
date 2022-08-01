@@ -22,15 +22,13 @@ offered by [Impulso] and [Digital Innovation One].
 
 ## Features
 Managemente of tasks available at the moment:
-| Feature | API endpoint | Body | Path Params |
-| :-: | :-: | :-: | :-: |
-| create one | `/tasks` | `{"taskData": {"description": string, ("isDone": boolean)} }` | 
-| create multiple at once | `/tasks/multiple` | `{"tasks": Array[{"description": string, ("isDone": boolean)}]}` | 
-| read one | `/tasks/id` | | `id: number` |
+| Feature | API endpoint | Path Params | Body | Query Params |
+| :-: | :-: | :-: | :-: | :-: |
+| create | `/tasks` || `{"tasks": Array[{"description": string, ("isDone": boolean)}]}` | 
+| read by ids | `/tasks` ||| `ids: numbers` |
 | read all | `/tasks` |
-| update one | `/tasks/id` | `{"taskData": {("description": string), ("isDone": boolean)} }` | `id: number` |
-| delete one | `/tasks/id` | | `id: number` |
-| delete multiple at once | `/tasks/multiple` | `{"ids": Array[number]}`
+| update one | `/tasks/id` |`id: number` | `{"taskData": {("description": string), ("isDone": boolean)} }` |
+| delete by ids | `/tasks` ||| `ids: numbers` |
 | delete all | `/tasks` |
 
 ## How to install
