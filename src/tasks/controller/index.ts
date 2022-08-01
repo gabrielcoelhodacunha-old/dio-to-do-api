@@ -19,13 +19,13 @@ const TasksController = {
 		}
 	},
 
-	async readById(request: Request, response: Response): Promise<Response> {
+	async readByIds(request: Request, response: Response): Promise<Response> {
 		try {
-			const { id } = request.params;
-			const numericId = Number(id);
-			if (isNaN(numericId)) throw new NoDataError();
-			const task = await TasksService.readById(numericId);
-			return response.status(StatusCodes.OK).json({ task });
+			const { ids } = request.query;
+			const idsAsNumber = transformStringToNumberArray(ids as string);
+			checkIfHasInvalidId(idsAsNumber);
+			const tasks = await TasksService.readByIds(idsAsNumber);
+			return response.status(StatusCodes.OK).json({ tasks });
 		} catch (error) {
 			return handleErrors(response, error);
 		}
@@ -36,6 +36,13 @@ const TasksController = {
 		return response.status(StatusCodes.OK).json({ tasks });
 	},
 
+	async read(request: Request, response: Response): Promise<Response> {
+		const { ids } = request.query;
+		return ids
+			? TasksController.readByIds(request, response)
+			: TasksController.readAll(request, response);
+	},
+
 	async updateOne(request: Request, response: Response): Promise<Response> {
 		try {
 			const { id } = request.params;
@@ -43,7 +50,7 @@ const TasksController = {
 			const numericId = Number(id);
 			if (isNaN(numericId) || !taskData) throw new NoDataError();
 			await TasksService.updateOne({ ...taskData, id });
-			const updatedTask = await TasksService.readById(numericId);
+			const updatedTask = await TasksService.readByIds([numericId]);
 			return response.status(StatusCodes.OK).json({ updatedTask });
 		} catch (error) {
 			return handleErrors(response, error);
@@ -53,12 +60,8 @@ const TasksController = {
 	async deleteByIds(request: Request, response: Response): Promise<Response> {
 		try {
 			const { ids } = request.query;
-			if (!ids) throw new NoDataError();
-			const idsAsNumber = (ids as string).split(',').map((id) => {
-				const idAsNumber = Number(id);
-				if (!idAsNumber || isNaN(idAsNumber)) throw new InvalidDataError();
-				return idAsNumber;
-			});
+			const idsAsNumber = transformStringToNumberArray(ids as string);
+			checkIfHasInvalidId(idsAsNumber);
 			await TasksService.deleteByIds(idsAsNumber);
 			return response.status(StatusCodes.NO_CONTENT).json();
 		} catch (error) {
@@ -78,5 +81,15 @@ const TasksController = {
 			: TasksController.deleteAll(request, response);
 	},
 };
+
+function transformStringToNumberArray(str: string) {
+	return str.split(',').map((id) => Number(id));
+}
+
+function checkIfHasInvalidId(ids: number[]) {
+	return ids.some((id) => {
+		if (!id || isNaN(id)) throw new InvalidDataError();
+	});
+}
 
 export default TasksController;

@@ -15,7 +15,8 @@ const updateOne = () =>
 				description: 'Updated',
 				isDone: true,
 			});
-			expect(await TasksService.readById(taskToUpdate.id)).toMatchObject({
+			const tasks = await TasksService.readByIds([taskToUpdate.id]);
+			expect(tasks[0]).toMatchObject({
 				...taskToUpdate,
 				description: 'Updated',
 				isDone: true,

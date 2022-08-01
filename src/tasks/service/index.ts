@@ -1,3 +1,4 @@
+import { In } from 'typeorm';
 import { TTask } from '../../../@types';
 import database from '../../../database';
 import Task from '../entity';
@@ -19,10 +20,10 @@ const TasksService = {
 		return tasks.map((task, index) => ({ ...task, ...generatedValues[index] }));
 	},
 
-	async readById(id: number): Promise<Task> {
-		const task = await _repository.findOneBy({ id });
-		if (!task) throw new InvalidDataError();
-		return task;
+	async readByIds(ids: number[]): Promise<Task[]> {
+		const tasks = await _repository.findBy({ id: In(ids) });
+		if (!tasks.length) throw new InvalidDataError();
+		return tasks;
 	},
 
 	async readAll(): Promise<Task[]> {

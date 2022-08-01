@@ -1,6 +1,6 @@
 import { configureSetupAndTeardown } from '.';
 import create from './create';
-import readById from './readById';
+import readByIds from './readByIds';
 import readAll from './readAll';
 import updateOne from './updateOne';
 import deleteByIds from './deleteByIds';
@@ -9,7 +9,7 @@ import deleteAll from './deleteAll';
 describe('TasksService', () => {
 	configureSetupAndTeardown();
 	create();
-	readById();
+	readByIds();
 	readAll();
 	updateOne();
 	deleteByIds();
