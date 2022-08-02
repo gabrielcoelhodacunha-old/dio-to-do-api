@@ -39,7 +39,7 @@ Managemente of tasks available at the moment:
 ### Installation
 In your terminal, clone the repository.
 ```bash
-git clone https://github.com/gccunha015/to_do-api
+git clone git@github.com:gccunha015/to_do-api.git
 ```
 Enter the directory cloned.
 ```bash
